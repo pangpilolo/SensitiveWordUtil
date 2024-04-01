@@ -9,11 +9,7 @@ public class SensitiveWordUtils {
 
 
     public static boolean isBlank(String str) {
-        if (str == null) {
-            return true;
-        } else {
-            return str.trim().length() == 0;
-        }
+        return str == null || str.trim().isEmpty();
     }
 
     public static boolean isNotBlank(String str) {
