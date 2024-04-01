@@ -13,7 +13,7 @@ public class SensitiveWordUtils {
     }
 
     public static boolean isNotBlank(String str) {
-        return isBlank(str);
+        return !isBlank(str);
     }
 
 }
