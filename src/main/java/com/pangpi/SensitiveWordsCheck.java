@@ -3,6 +3,8 @@ package com.pangpi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 敏感词审核
@@ -24,7 +26,7 @@ public class SensitiveWordsCheck {
      * @param content 需要筛选的内容
      * @return 筛选替换后的内容
      */
-
+    @Deprecated
     public String replaceBanWords(String content) {
         return replaceBanWords(content, "***");
     }
@@ -36,13 +38,46 @@ public class SensitiveWordsCheck {
      * @param replaceStr 替换敏感词的字符
      * @return 筛选替换后的内容
      */
+    @Deprecated
     public String replaceBanWords(String content, String replaceStr) {
         List<String> badWords = searchBanWords(content);
         String filterContent = content;
         for (String word : badWords) {
-            filterContent = content.replaceAll(word, replaceStr);
+            filterContent = filterContent.replaceAll(word, replaceStr);
         }
         return filterContent;
+    }
+
+    /**
+     * 替换敏感词
+     *
+     * @param content 需要筛选的内容
+     * @return 筛选替换后的内容
+     */
+    public String replaceSensitiveWords(String content) {
+        return replaceSensitiveWords(content, "***");
+    }
+
+    /**
+     * 替换敏感词
+     *
+     * @param content    需要筛选的内容
+     * @param replaceStr 替换敏感词的字符
+     * @return 筛选替换后的内容
+     */
+    public String replaceSensitiveWords(String content, String replaceStr) {
+        List<String> badWords = searchBanWords(content);
+        StringBuilder regexBuilder = new StringBuilder();
+        for (String word : badWords) {
+            if (regexBuilder.length() > 0) {
+                regexBuilder.append("|");
+            }
+            regexBuilder.append(Pattern.quote(word));
+        }
+        String regex = regexBuilder.toString();
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(content);
+        return matcher.replaceAll(replaceStr);
     }
 
     /**
@@ -62,16 +97,14 @@ public class SensitiveWordsCheck {
                 p++;
                 index = index >> 1;
                 String sub;
-
-                String substring = content.substring(i, i + p);
                 if ((i + p) < (content.length() - 1)) {
-                    sub = substring;
+                    sub = content.substring(i, i + p);
                 } else {
                     sub = content.substring(i);
                 }
 
                 if (((index % 2) == 1) && sensitiveWord.sensitiveWordsList[p].containsKey(sub)) {
-                    result.add(substring);
+                    result.add(sub);
                 }
             }
         }
